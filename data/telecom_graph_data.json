@@ -1,0 +1,44 @@
+{
+  "vertices": [
+    {
+      "~id": "1",
+      "~label": "person",
+      "name": "Alice",
+      "phone": "9781-1234"
+    },
+    {
+      "~id": "2",
+      "~label": "person",
+      "name": "Bob",
+      "phone": "8769-1234"
+    },
+    {
+      "~id": "3",
+      "~label": "call",
+      "timestamp": "2025-05-01T08:00:00",
+      "duration": 2
+    },
+    {
+      "~id": "4",
+      "~label": "location",
+      "city": "Singapore",
+      "block": "Block 123"
+    }
+  ],
+  "edges": [
+    {
+      "~id": "5",
+      "~label": "call",
+      "~from": "1",
+      "~to": "2",
+      "timestamp": "2025-05-01T08:00:00",
+      "duration": 2
+    },
+    {
+      "~id": "6",
+      "~label": "made_at",
+      "~from": "3",
+      "~to": "4"
+    }
+  ]
+}
