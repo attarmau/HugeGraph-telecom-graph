@@ -1,57 +1,65 @@
 {
   "vertices": [
     {
-      "id": "1",
       "label": "person",
-      "properties": {
-        "name": "Alice",
-        "phone": "9781-1234"
+      "id": "id",
+      "properties": ["name", "phone"],
+      "input": {
+        "type": "file",
+        "path": "data/person.csv",
+        "format": "CSV",
+        "header": true
       }
     },
     {
-      "id": "2",
-      "label": "person",
-      "properties": {
-        "name": "Bob",
-        "phone": "8769-1234"
-      }
-    },
-    {
-      "id": "3",
-      "label": "call",
-      "properties": {
-        "timestamp": "2025-05-01T08:00:00",
-        "duration": 2
-      }
-    },
-    {
-      "id": "4",
       "label": "location",
-      "properties": {
-        "city": "Singapore",
-        "block": "Block 123"
+      "id": "id",
+      "properties": ["city", "block"],
+      "input": {
+        "type": "file",
+        "path": "data/location.csv",
+        "format": "CSV",
+        "header": true
+      }
+    },
+    {
+      "label": "call_event",
+      "id": ["id", "target_id", "timestamp"], 
+      "properties": ["timestamp", "duration"],
+      "input": {
+        "type": "file",
+        "path": "data/call.csv",
+        "format": "CSV",
+        "header": true
       }
     }
   ],
   "edges": [
     {
-      "id": "5",
-      "source": "1",
-      "target": "2",
-      "label": "call",
-      "properties": {
-        "timestamp": "2025-05-01T08:00:00",
-        "duration": 2
+      "label": "called",
+      "source_label": "person",
+      "target_label": "person",
+      "source_id": "id",
+      "target_id": "target_id",
+      "properties": ["timestamp", "duration"],
+      "input": {
+        "type": "file",
+        "path": "data/call.csv",
+        "format": "CSV",
+        "header": true
       }
     },
     {
-      "id": "6",
-      "source": "2",
-      "target": "4",
-      "label": "located_at",
-      "properties": {
-        "city": "Singapore",
-        "block": "Block 123"
+      "label": "made_at",
+      "source_label": "call_event",
+      "target_label": "location",
+      "source_id": ["id", "target_id", "timestamp"],
+      "target_id": "location_id",
+      "input": {
+        "type": "file",
+        "path": "data/call.csv",
+        "format": "CSV",
+        "header": true
       }
     }
   ]
