@@ -1,13 +1,18 @@
 version: "3.8"
 
 services:
-  hugegraph-server:
-    image: hugegraph/hugegraph:latest
-    container_name: hugegraph-server
+  arangodb:
+    image: arangodb:latest
+    container_name: arangodb
+    environment:
+      - ARANGO_ROOT_PASSWORD=openSesame
     ports:
-      - "8080:8080"
+      - "8529:8529"
+    volumes:
+      - ./arango_data:/var/lib/arangodb3
+      - ./data:/import
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/graphs"]
+      test: ["CMD", "curl", "-f", "http://localhost:8529/_admin/server/availability"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -18,17 +23,24 @@ services:
     ports:
       - "8501:8501"
     depends_on:
-      hugegraph-server:
+      arangodb:
         condition: service_healthy
     volumes:
       - ./assets:/app/assets
+      - ./data:/app/data  # optional, in case UI needs access to raw CSVs
 
-  hugegraph-init:
-    image: curlimages/curl:latest
-    container_name: hugegraph-init
+  arangodb-setup:
+    image: arangodb:latest
+    container_name: arangodb-setup
     depends_on:
-      hugegraph-server:
+      arangodb:
         condition: service_healthy
+    entrypoint: >
+      bash -c "
+      sleep 5 &&
+      arangosh --server.endpoint http+tcp://arangodb:8529 \
+               --server.password openSesame \
+               --javascript.execute /import/create_schema.js
+      "
     volumes:
-      - ./init:/init
-    entrypoint: ["/bin/sh", "/init/init.sh"]
+      - ./init:/import
