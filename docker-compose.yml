@@ -10,7 +10,6 @@ services:
       - "8529:8529"
     volumes:
       - ./arango_data:/var/lib/arangodb3
-      - ./data:/import
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8529/_admin/server/availability"]
       interval: 10s
@@ -27,7 +26,7 @@ services:
         condition: service_healthy
     volumes:
       - ./assets:/app/assets
-      - ./data:/app/data  # optional: if you want UI access to CSVs
+      - ./data:/app/data  # optional: for raw CSVs or reference
 
   arangodb-setup:
     image: arangodb:latest
@@ -45,4 +44,20 @@ services:
         arangosh --server.endpoint http+tcp://arangodb:8529 \
                  --server.password openSesame \
                  --javascript.execute /import/create_schema.js
+      "
+
+  arangodb-load-data:
+    image: arangodb:latest
+    container_name: arangodb-load-data
+    depends_on:
+      arangodb-setup:
+        condition: service_completed_successfully
+    volumes:
+      - ./init:/import
+    entrypoint: >
+      bash -c "
+        echo '📦 Loading JSON data into ArangoDB...' &&
+        arangosh --server.endpoint http+tcp://arangodb:8529 \
+                 --server.password openSesame \
+                 --javascript.execute /import/load_data.js
       "
