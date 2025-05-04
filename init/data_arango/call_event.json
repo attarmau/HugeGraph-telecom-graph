@@ -1,0 +1,58 @@
+[
+  {
+    "_key": "1_2_2025-05-01T08:00:00",
+    "caller_id": "1",
+    "callee_id": "2",
+    "timestamp": "2025-05-01T08:00:00",
+    "duration": 2,
+    "location_id": "101"
+  },
+  {
+    "_key": "1_3_2025-05-02T08:10:00",
+    "caller_id": "1",
+    "callee_id": "3",
+    "timestamp": "2025-05-02T08:10:00",
+    "duration": 4,
+    "location_id": "101"
+  },
+  {
+    "_key": "1_4_2025-05-03T08:11:00",
+    "caller_id": "1",
+    "callee_id": "4",
+    "timestamp": "2025-05-03T08:11:00",
+    "duration": 2,
+    "location_id": "101"
+  },
+  {
+    "_key": "1_2_2025-05-03T08:11:00",
+    "caller_id": "1",
+    "callee_id": "2",
+    "timestamp": "2025-05-03T08:11:00",
+    "duration": 1,
+    "location_id": "101"
+  },
+  {
+    "_key": "1_2_2025-05-04T08:11:00",
+    "caller_id": "1",
+    "callee_id": "2",
+    "timestamp": "2025-05-04T08:11:00",
+    "duration": 5,
+    "location_id": "102"
+  },
+  {
+    "_key": "3_1_2025-05-03T08:11:00",
+    "caller_id": "3",
+    "callee_id": "1",
+    "timestamp": "2025-05-03T08:11:00",
+    "duration": 2,
+    "location_id": "102"
+  },
+  {
+    "_key": "1_10_2025-05-04T08:11:00",
+    "caller_id": "1",
+    "callee_id": "10",
+    "timestamp": "2025-05-04T08:11:00",
+    "duration": 1,
+    "location_id": "102"
+  }
+]
