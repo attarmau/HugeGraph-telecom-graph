@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     volumes:
       - ./assets:/app/assets
-      - ./data:/app/data  # optional, in case UI needs access to raw CSVs
+      - ./data:/app/data  # optional: if you want UI access to CSVs
 
   arangodb-setup:
     image: arangodb:latest
@@ -35,12 +35,14 @@ services:
     depends_on:
       arangodb:
         condition: service_healthy
-    entrypoint: >
-      bash -c "
-      sleep 5 &&
-      arangosh --server.endpoint http+tcp://arangodb:8529 \
-               --server.password openSesame \
-               --javascript.execute /import/create_schema.js
-      "
     volumes:
       - ./init:/import
+    entrypoint: >
+      bash -c "
+        echo '⏳ Waiting a few seconds for ArangoDB readiness...' &&
+        sleep 5 &&
+        echo '🚀 Executing create_schema.js' &&
+        arangosh --server.endpoint http+tcp://arangodb:8529 \
+                 --server.password openSesame \
+                 --javascript.execute /import/create_schema.js
+      "
