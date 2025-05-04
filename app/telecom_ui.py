@@ -4,7 +4,11 @@ import networkx as nx
 from pyvis.network import Network
 import os
 
-HUGEGRAPH_URL = "http://hugegraph-server:8080"
+ARANGO_URL = "http://arangodb:8529"
+DB_NAME = "telecom"
+GRAPH_NAME = "telecom_graph"
+USERNAME = "root"
+PASSWORD = os.getenv("ARANGO_ROOT_PASSWORD", "openSesame")  # fallback
 
 st.set_page_config(layout="wide")
 st.title("📞 Telecom Call Graph Explorer")
@@ -12,30 +16,41 @@ st.title("📞 Telecom Call Graph Explorer")
 phone = st.text_input("Enter a phone number to explore call history (e.g., 123):")
 
 def get_call_graph(phone_number):
+    # AQL query to find calls made by a person with a given phone number
     query = {
-        "gremlin": f"""
-        g.V().has('person','phone','{phone_number}')
-        .as('caller')
-        .outE('call').as('call_edge')
-        .inV().as('callee')
-        .select('caller','call_edge','callee')
-        """
+        "query": f"""
+            FOR caller IN person
+                FILTER caller._key == @phone
+                FOR call IN OUTBOUND caller called
+                    LET callee = DOCUMENT(call._to)
+                    RETURN {{
+                        caller: caller.name,
+                        callee: callee.name,
+                        timestamp: call.timestamp,
+                        duration: call.duration
+                    }}
+        """,
+        "bindVars": {"phone": phone_number}
     }
-    resp = requests.post(f"{HUGEGRAPH_URL}/graphs/hugegraph/gremlin", json=query)
-    return resp.json()
+
+    response = requests.post(
+        f"{ARANGO_URL}/_db/{DB_NAME}/_api/cursor",
+        auth=(USERNAME, PASSWORD),
+        json=query
+    )
+    return response.json()
 
 if st.button("Query & Visualize"):
     result = get_call_graph(phone)
-    elements = result.get("result", {}).get("data", [])
+    elements = result.get("result", [])
     
     G = nx.MultiDiGraph()
 
     for item in elements:
-        caller = item["caller"]["properties"]["name"]
-        callee = item["callee"]["properties"]["name"]
-        call_props = item["call_edge"]["properties"]
-        duration = call_props.get("duration", "?")
-        timestamp = call_props.get("timestamp", "?")
+        caller = item["caller"]
+        callee = item["callee"]
+        duration = item.get("duration", "?")
+        timestamp = item.get("timestamp", "?")
         edge_label = f"{timestamp}, {duration} min"
 
         G.add_node(caller)
