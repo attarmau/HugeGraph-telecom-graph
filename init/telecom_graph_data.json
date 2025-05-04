@@ -1,65 +1,82 @@
 {
   "vertices": [
     {
-      "label": "person",
-      "id": "id",
-      "properties": ["name", "phone"],
+      "collection": "person",
+      "key_field": "phone",
       "input": {
         "type": "file",
         "path": "data/person.csv",
         "format": "CSV",
         "header": true
+      },
+      "fields": {
+        "name": "name",
+        "_key": "phone"
       }
     },
     {
-      "label": "location",
-      "id": "id",
-      "properties": ["city", "block"],
+      "collection": "location",
+      "key_field": "id",
       "input": {
         "type": "file",
         "path": "data/location.csv",
         "format": "CSV",
         "header": true
+      },
+      "fields": {
+        "city": "city",
+        "block": "block",
+        "_key": "id"
       }
     },
     {
-      "label": "call_event",
-      "id": ["id", "target_id", "timestamp"], 
-      "properties": ["timestamp", "duration"],
+      "collection": "call_event",
+      "key_field": "composite_id",
       "input": {
         "type": "file",
         "path": "data/call.csv",
         "format": "CSV",
         "header": true
-      }
+      },
+      "fields": {
+        "timestamp": "timestamp",
+        "duration": "duration",
+        "_key": "composite_id"
+      },
+      "composite_key": ["id", "target_id", "timestamp"]
     }
   ],
   "edges": [
     {
-      "label": "called",
-      "source_label": "person",
-      "target_label": "person",
-      "source_id": "id",
-      "target_id": "target_id",
-      "properties": ["timestamp", "duration"],
+      "collection": "called",
       "input": {
         "type": "file",
         "path": "data/call.csv",
         "format": "CSV",
         "header": true
+      },
+      "from_collection": "person",
+      "to_collection": "person",
+      "fields": {
+        "_from": "person/{id}",
+        "_to": "person/{target_id}",
+        "timestamp": "timestamp",
+        "duration": "duration"
       }
     },
     {
-      "label": "made_at",
-      "source_label": "call_event",
-      "target_label": "location",
-      "source_id": ["id", "target_id", "timestamp"],
-      "target_id": "location_id",
+      "collection": "made_at",
       "input": {
         "type": "file",
         "path": "data/call.csv",
         "format": "CSV",
         "header": true
+      },
+      "from_collection": "call_event",
+      "to_collection": "location",
+      "fields": {
+        "_from": "call_event/{id}_{target_id}_{timestamp}",
+        "_to": "location/{location_id}"
       }
     }
   ]
