@@ -4,65 +4,64 @@ import networkx as nx
 from pyvis.network import Network
 import os
 
-ARANGO_URL = "http://arangodb:8529"
-DB_NAME = "telecom"
-GRAPH_NAME = "telecom_graph"
-USERNAME = "root"
-PASSWORD = os.getenv("ARANGO_ROOT_PASSWORD", "openSesame")  # fallback
+HUGEGRAPH_URL = "http://hugegraph-server:8080"
 
 st.set_page_config(layout="wide")
 st.title("📞 Telecom Call Graph Explorer")
 
-phone = st.text_input("Enter a phone number to explore call history (e.g., 123):")
+phone = st.text_input("Enter a phone number to explore call history (e.g., 9781-1234):")
 
 def get_call_graph(phone_number):
-    # AQL query to find calls made by a person with a given phone number
     query = {
-        "query": f"""
-            FOR caller IN person
-                FILTER caller._key == @phone
-                FOR call IN OUTBOUND caller called
-                    LET callee = DOCUMENT(call._to)
-                    RETURN {{
-                        caller: caller.name,
-                        callee: callee.name,
-                        timestamp: call.timestamp,
-                        duration: call.duration
-                    }}
-        """,
-        "bindVars": {"phone": phone_number}
+        "gremlin": f"""
+        g.V().has('person','phone','{phone_number}').as('caller')
+        .outE('called').as('call_edge')
+        .inV().as('callee')
+        .inE('called').outV().as('call_event')
+        .out('made_at').as('location')
+        .select('caller', 'callee', 'call_edge', 'call_event', 'location')
+        .by(valueMap(true))
+        """
     }
-
-    response = requests.post(
-        f"{ARANGO_URL}/_db/{DB_NAME}/_api/cursor",
-        auth=(USERNAME, PASSWORD),
-        json=query
-    )
-    return response.json()
+    resp = requests.post(f"{HUGEGRAPH_URL}/graphs/hugegraph/gremlin", json=query)
+    return resp.json()
 
 if st.button("Query & Visualize"):
     result = get_call_graph(phone)
-    elements = result.get("result", [])
+    elements = result.get("result", {}).get("data", [])
     
-    G = nx.MultiDiGraph()
+    if not elements:
+        st.warning("No call records found for this number.")
+    else:
+        G = nx.MultiDiGraph()
 
-    for item in elements:
-        caller = item["caller"]
-        callee = item["callee"]
-        duration = item.get("duration", "?")
-        timestamp = item.get("timestamp", "?")
-        edge_label = f"{timestamp}, {duration} min"
+        for item in elements:
+            caller_name = item["caller"]["name"][0]
+            callee_name = item["callee"]["name"][0]
 
-        G.add_node(caller)
-        G.add_node(callee)
-        G.add_edge(caller, callee, label=edge_label)
+            duration = item["call_edge"]["duration"]
+            timestamp = item["call_edge"]["timestamp"]
 
-    net = Network(height="600px", width="100%", directed=True)
-    net.from_nx(G)
-    net.show_buttons(filter_=['physics'])
-    net.save_graph("assets/graph.html")
+            city = item["location"]["city"][0]
+            block = item["location"]["block"][0]
+            location_info = f"{city} - {block}"
 
-    st.success("Graph generated below 👇")
-    with open("assets/graph.html", "r", encoding="utf-8") as f:
-        html_content = f.read()
-    st.components.v1.html(html_content, height=650, scrolling=True)
+            edge_label = f"{timestamp}, {duration} min\n📍{location_info}"
+
+            G.add_node(caller_name)
+            G.add_node(callee_name)
+            G.add_edge(caller_name, callee_name, label=edge_label)
+
+        net = Network(height="600px", width="100%", directed=True)
+        net.from_nx(G)
+        net.show_buttons(filter_=['physics'])
+        
+        if not os.path.exists("assets"):
+            os.makedirs("assets")
+
+        net.save_graph("assets/graph.html")
+
+        st.success("Graph generated below 👇")
+        with open("assets/graph.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        st.components.v1.html(html_content, height=650, scrolling=True)
