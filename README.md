@@ -1,7 +1,7 @@
 # link-analysis
 
 ```
-hugegraph-telecom-visualizer/
+hugegraph-telecom-graph/
 ├── backend/
 │   ├── app.py                  
 │   ├── graph_queries.py        
