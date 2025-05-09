@@ -12,7 +12,7 @@ hugegraph-telecom-graph/
 │   ├── style.css               
 │   └── utils.js                
 ├── schema/
-│   ├── schema.groovy           
+│   ├── created_schema.groovy           
 │   └── sample_data.groovy      
 ├── queries/
 │   └── example_queries.txt     
