@@ -14,8 +14,14 @@ hugegraph-telecom-graph/
 ├── schema/
 │   ├── created_schema.groovy           
 │   └── sample_data.groovy      
+├── loader/                                
+│   ├── telecom_graph_data.json            
+│   ├── person.csv                         
+│   ├── location.csv                       
+│   └── call.csv                           
 ├── queries/
 │   └── example_queries.txt     
 ├── README.md                   
-└── architecture.png            
+└── architecture.png      
+      
 ```
