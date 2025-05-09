@@ -1,6 +1,6 @@
 # link-analysis
 
-'''
+```
 hugegraph-telecom-visualizer/
 ├── backend/
 │   ├── app.py                  # FastAPI or Flask API
@@ -18,4 +18,4 @@ hugegraph-telecom-visualizer/
 │   └── example_queries.txt     # Sample Gremlin/HugeGraph queries
 ├── README.md                   # Documentation
 └── architecture.png            # (Optional) system overview diagram
-'''
+```
