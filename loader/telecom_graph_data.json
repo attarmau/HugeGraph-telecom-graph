@@ -1,0 +1,71 @@
+{
+  "vertices": [
+    {
+      "label": "person",
+      "id": "id",
+      "properties": ["name", "phone"],
+      "input": {
+        "type": "file",
+        "path": "data/person.csv",
+        "format": "CSV",
+        "header": true,
+        "null_values": ["", "null", "NA"]
+      }
+    },
+    {
+      "label": "location",
+      "id": "id",
+      "properties": ["city", "block"],
+      "input": {
+        "type": "file",
+        "path": "data/location.csv",
+        "format": "CSV",
+        "header": true,
+        "null_values": ["", "null", "NA"]
+      }
+    },
+    {
+      "label": "call_event",
+      "id": ["id", "target_id", "timestamp"],
+      "properties": ["timestamp", "duration", "location_id"],
+      "input": {
+        "type": "file",
+        "path": "data/call.csv",
+        "format": "CSV",
+        "header": true,
+        "null_values": ["", "null", "NA"]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "label": "called",
+      "source_label": "person",
+      "target_label": "person",
+      "source_id": "id",
+      "target_id": "target_id",
+      "properties": ["timestamp", "duration"],
+      "input": {
+        "type": "file",
+        "path": "data/call.csv",
+        "format": "CSV",
+        "header": true,
+        "null_values": ["", "null", "NA"]
+      }
+    },
+    {
+      "label": "made_at",
+      "source_label": "call_event",
+      "target_label": "location",
+      "source_id": ["id", "target_id", "timestamp"],
+      "target_id": "location_id",
+      "input": {
+        "type": "file",
+        "path": "data/call.csv",
+        "format": "CSV",
+        "header": true,
+        "null_values": ["", "null", "NA"]
+      }
+    }
+  ]
+}
