@@ -27,7 +27,9 @@ hugegraph-telecom-graph/
       
 ```
 
-To start, please first clone the entire project. After that, follow the instructions below
+To start, please first clone the entire project. After that, follow the instructions below.
+
+# Create Schema
 ```
 cd hugegraph-telecom-graph
 ```
@@ -40,3 +42,9 @@ By doing so, HugeGraph has your full schema set up:
 * Vertex labels (person, call_event, location)
 * Edge labels (called, made_at)
 * Indexes (personByPhone, callByTimestamp)
+
+# Insert dummy data
+```
+chmod +x insert_data.sh
+./insert_data.sh
+```
