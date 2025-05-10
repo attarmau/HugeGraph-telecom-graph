@@ -1,5 +1,3 @@
-#!/bin/bash
-
 GRAPH_URL="http://localhost:8080/graphs/hugegraph"
 
 echo "🔹 Inserting persons..."
