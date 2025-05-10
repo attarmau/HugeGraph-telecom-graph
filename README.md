@@ -25,3 +25,17 @@ hugegraph-telecom-graph/
 └── architecture.png      
       
 ```
+
+To start, please first clone the entire project. After that, follow the instructions below
+```
+cd hugegraph-telecom-graph
+```
+```
+chmod +x setup_schema.sh     # (only once)
+./setup_schema.sh
+```
+By doing so, HugeGraph has your full schema set up:
+* Property keys
+* Vertex labels (person, call_event, location)
+* Edge labels (called, made_at)
+* Indexes (personByPhone, callByTimestamp)
