@@ -1,5 +1,5 @@
 // Property Keys
-schema.propertyKey("id").asText().ifNotExist().create()             // UUID or text-safe
+schema.propertyKey("id").asText().ifNotExist().create()            
 schema.propertyKey("target_id").asText().ifNotExist().create()
 schema.propertyKey("name").asText().ifNotExist().create()
 schema.propertyKey("phone").asText().ifNotExist().create()
@@ -30,13 +30,11 @@ schema.edgeLabel("called")
       .sourceLabel("person")
       .targetLabel("person")
       .properties("timestamp", "duration")
-      .multiplicity("MULTI")
       .ifNotExist().create()
 
 schema.edgeLabel("made_at")
       .sourceLabel("call_event")
       .targetLabel("location")
-      .multiplicity("ONE2ONE")
       .ifNotExist().create()
 
 // Indexes (for efficient lookups)
