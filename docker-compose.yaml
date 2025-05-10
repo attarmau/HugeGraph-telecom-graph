@@ -1,0 +1,12 @@
+version: '3'
+services:
+  server:
+    image: hugegraph/hugegraph:1.5.0
+    container_name: server
+    # environment:
+    #  - PRELOAD=true
+    # PRELOAD is a option to preload a build-in sample graph when initializing.
+    # - PASSWORD=123456
+    # PASSWORD is an option to enable auth mode with the password you set.
+    ports:
+      - 8080:8080
