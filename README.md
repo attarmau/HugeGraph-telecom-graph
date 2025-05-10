@@ -15,7 +15,8 @@ hugegraph-telecom-graph/
 │   ├── created_schema.groovy           
 │   └── sample_data.groovy      
 ├── loader/                                
-│   ├── telecom_graph_data.json            
+│   ├── telecom_graph_data.json
+│   ├── insert_data.sh       
 │   ├── person.csv                         
 │   ├── location.csv                       
 │   └── call.csv                           
