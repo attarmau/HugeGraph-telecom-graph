@@ -1,12 +1,10 @@
 #!/bin/bash
 
-# Define API endpoint and headers for HugeGraph schema operations
 API="http://localhost:8080/graphs/hugegraph/schema"
 HEADERS="-H Content-Type:application/json"
 
 echo "🔧 Creating PropertyKeys..."
 
-# Creating Property Keys with existence check (if not exists)
 curl -X POST $API/propertykeys $HEADERS -d '{"name": "id", "data_type": "TEXT", "cardinality": "SINGLE"}'
 curl -X POST $API/propertykeys $HEADERS -d '{"name": "target_id", "data_type": "TEXT", "cardinality": "SINGLE"}'
 curl -X POST $API/propertykeys $HEADERS -d '{"name": "name", "data_type": "TEXT", "cardinality": "SINGLE"}'
@@ -19,7 +17,6 @@ curl -X POST $API/propertykeys $HEADERS -d '{"name": "location_id", "data_type":
 
 echo "🧩 Creating VertexLabels..."
 
-# Creating Vertex Labels with existence check (if not exists)
 curl -X POST $API/vertexlabels $HEADERS -d '{
   "name": "person",
   "properties": ["id", "name", "phone"],
@@ -40,25 +37,21 @@ curl -X POST $API/vertexlabels $HEADERS -d '{
 
 echo "🔗 Creating EdgeLabels..."
 
-# Creating Edge Labels (with multiplicity support corrected)
 curl -X POST $API/edgelabels $HEADERS -d '{
   "name": "called",
   "source_label": "person",
   "target_label": "person",
-  "properties": ["timestamp", "duration"],
-  "multiplicity": "MULTI"
+  "properties": ["timestamp", "duration"]
 }'
 
 curl -X POST $API/edgelabels $HEADERS -d '{
   "name": "made_at",
   "source_label": "call_event",
-  "target_label": "location",
-  "multiplicity": "ONE2ONE"
+  "target_label": "location"
 }'
 
 echo "📦 Creating IndexLabels..."
 
-# Creating Index Labels (with existence check)
 curl -X POST $API/indexlabels $HEADERS -d '{
   "name": "personByPhone",
   "base_type": "VERTEX_LABEL",
