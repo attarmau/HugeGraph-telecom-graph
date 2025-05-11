@@ -1,0 +1,8 @@
+id,target_id,timestamp,duration,location_id
+call_person_1_person_2_2025-05-01-080000,person_2,2025-05-01-080000,2,location_101
+call_person_1_person_3_2025-05-02-081000,person_3,2025-05-02-081000,4,location_101
+call_person_1_person_4_2025-05-03-081100,person_4,2025-05-03-081100,2,location_101
+call_person_1_person_2_2025-05-03-081100,person_2,2025-05-03-081100,1,location_101
+call_person_1_person_2_2025-05-04-081100,person_2,2025-05-04-081100,5,location_102
+call_person_3_person_1_2025-05-03-081100,person_1,2025-05-03-081100,2,location_102
+call_person_1_person_10_2025-05-04-081100,person_10,2025-05-04-081100,1,location_102
