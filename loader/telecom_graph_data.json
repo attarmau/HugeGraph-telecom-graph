@@ -3,9 +3,10 @@
     {
       "label": "person",
       "id": "id",
+      "properties": ["name", "phone"],
       "input": {
         "type": "file",
-        "path": "loader/person.csv",
+        "path": "data/person.csv",
         "format": "CSV",
         "header": true,
         "null_values": ["", "null", "NA"]
@@ -14,9 +15,10 @@
     {
       "label": "location",
       "id": "id",
+      "properties": ["city", "block"],
       "input": {
         "type": "file",
-        "path": "loader/location.csv",
+        "path": "data/location.csv",
         "format": "CSV",
         "header": true,
         "null_values": ["", "null", "NA"]
@@ -24,10 +26,11 @@
     },
     {
       "label": "call_event",
-      "id": ["id", "target_id", "timestamp"],
+      "id": "id",
+      "properties": ["timestamp", "duration", "location_id", "target_id"],
       "input": {
         "type": "file",
-        "path": "loader/call.csv",
+        "path": "data/call.csv",
         "format": "CSV",
         "header": true,
         "null_values": ["", "null", "NA"]
@@ -39,11 +42,16 @@
       "label": "called",
       "source_label": "person",
       "target_label": "person",
-      "source_id": "id",
-      "target_id": "target_id",
+      "source_id": {
+        "input": "id"
+      },
+      "target_id": {
+        "input": "target_id"
+      },
+      "properties": ["timestamp", "duration"],
       "input": {
         "type": "file",
-        "path": "loader/call.csv",
+        "path": "data/call.csv",
         "format": "CSV",
         "header": true,
         "null_values": ["", "null", "NA"]
@@ -53,11 +61,15 @@
       "label": "made_at",
       "source_label": "call_event",
       "target_label": "location",
-      "source_id": ["id", "target_id", "timestamp"],
-      "target_id": "location_id",
+      "source_id": {
+        "input": "id"
+      },
+      "target_id": {
+        "input": "location_id"
+      },
       "input": {
         "type": "file",
-        "path": "loader/call.csv",
+        "path": "data/call.csv",
         "format": "CSV",
         "header": true,
         "null_values": ["", "null", "NA"]
