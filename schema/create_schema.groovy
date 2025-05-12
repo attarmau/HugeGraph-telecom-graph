@@ -1,56 +1,52 @@
-// ==== Property Keys ====
-schema.propertyKey("id").asText().ifNotExist().create()
-schema.propertyKey("target_id").asText().ifNotExist().create() // Property for the callee on call_event
-schema.propertyKey("name").asText().ifNotExist().create()
-schema.propertyKey("phone").asText().ifNotExist().create()
-schema.propertyKey("timestamp").asText().ifNotExist().create()
-schema.propertyKey("duration").asInt().ifNotExist().create()
-schema.propertyKey("city").asText().ifNotExist().create()
-schema.propertyKey("block").asText().ifNotExist().create()
-// schema.propertyKey("location_id").asText().ifNotExist().create() // No longer primary, just a property if needed, or use "id" for location PK
+graph.addVertex(T.label, 'person', 'id', 'person_1', 'name', 'Alice', 'phone', '9781-1234')
+graph.addVertex(T.label, 'person', 'id', 'person_2', 'name', 'Bob', 'phone', '9455-6789')
+graph.addVertex(T.label, 'person', 'id', 'person_3', 'name', 'Catherine', 'phone', '9123-4567')
 
-// ==== Vertex Labels ====
+graph.addVertex(T.label, 'location', 'id', 'loc_1', 'city', 'Singapore', 'block', 'Clementi')
+graph.addVertex(T.label, 'location', 'id', 'loc_2', 'city', 'Singapore', 'block', 'Orchard')
 
-// Person vertex (caller or callee)
-schema.vertexLabel("person")
-      .properties("id", "name", "phone")
-      .primaryKeys("id") // Stays the same, this is correct
-      .ifNotExist().create()
+graph.addVertex(T.label, 'call_event',
+    'id', 'person_1',
+    'target_id', 'person_2',
+    'timestamp', '2025-05-05T08:00:00',
+    'duration', 120,
+    'location_id', 'loc_1')
 
-// Location vertex (place where call happened)
-schema.vertexLabel("location")
-      .properties("id", "city", "block") // Use "id" as the PK property name
-      .primaryKeys("id")                 // Use "id" as the PK
-      .ifNotExist().create()
+graph.addVertex(T.label, 'call_event',
+    'id', 'person_2',
+    'target_id', 'person_3',
+    'timestamp', '2025-05-06T10:30:00',
+    'duration', 90,
+    'location_id', 'loc_2')
 
-// Call event vertex (timestamped communication)
-schema.vertexLabel("call_event")
-      // "id" will be like "call_person_1_person_2_2025-05-01-080000"
-      .properties("id", "target_id", "timestamp", "duration", "location_id") // "location_id" here is the foreign key string
-      .primaryKeys("id") // Simplified to use the unique ID string you generate
-      .ifNotExist().create()
+g.V().has('person', 'id', 'person_1')
+ .as('a')
+ .V().has('person', 'id', 'person_2')
+ .addE('called').from('a')
+ .property('timestamp', '2025-05-05T08:00:00')
+ .property('duration', 120)
+ .iterate()
 
-// ==== Edge Labels ====
+g.V().has('person', 'id', 'person_2')
+ .as('a')
+ .V().has('person', 'id', 'person_3')
+ .addE('called').from('a')
+ .property('timestamp', '2025-05-06T10:30:00')
+ .property('duration', 90)
+ .iterate()
 
-// Person initiated a call_event
-schema.edgeLabel("initiated_call")
-      .sourceLabel("person")
-      .targetLabel("call_event")
-      // No properties needed here if they are on call_event
-      .ifNotExist().create()
+g.V().has('call_event', 'id', 'person_1')
+ .has('target_id', 'person_2')
+ .has('timestamp', '2025-05-05T08:00:00')
+ .as('e')
+ .V().has('location', 'id', 'loc_1')
+ .addE('made_at').from('e')
+ .iterate()
 
-// call_event was directed to a person (callee)
-schema.edgeLabel("was_for") // Or "has_recipient", "targets_person", etc.
-      .sourceLabel("call_event")
-      .targetLabel("person")
-      .ifNotExist().create()
-
-// Where the call was made (call_event to location)
-schema.edgeLabel("made_at")
-      .sourceLabel("call_event")
-      .targetLabel("location")
-      .ifNotExist().create()
-
-// ==== Indexes (optional but recommended) ====
-schema.indexLabel("personByPhone").onV("person").by("phone").ifNotExist().create()
-schema.indexLabel("callByTimestamp").onV("call_event").by("timestamp").ifNotExist().create()
+g.V().has('call_event', 'id', 'person_2')
+ .has('target_id', 'person_3')
+ .has('timestamp', '2025-05-06T10:30:00')
+ .as('e')
+ .V().has('location', 'id', 'loc_2')
+ .addE('made_at').from('e')
+ .iterate()
