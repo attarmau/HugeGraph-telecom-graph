@@ -23,8 +23,9 @@ hugegraph-telecom-graph/
 ├── queries/
 │   └── example_queries.txt
 ├── setup_schema.sh
+├── requirement
 ├── README.md                   
-└── architecture.png      
+└── architecture.png # pending     
       
 ```
 
