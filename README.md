@@ -14,13 +14,13 @@ hugegraph-telecom-graph/
 │   └── utils.js   # pending              
 ├── loader/                                
 │   ├── telecom_graph_data.json
-│   ├── insert_data.sh       
+│   ├── insert_data.py      
 │   ├── person.csv                         
 │   ├── location.csv                       
 │   └── call.csv                           
 ├── queries/
 │   └── example_queries.txt
-├── setup_schema.sh
+├── setup_schema.py
 ├── requirement.txt
 ├── docker-compose.yaml
 ├── README.md                   
