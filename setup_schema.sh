@@ -1,69 +1,95 @@
-API="http://localhost:8080/graphs/hugegraph/schema"
-HEADERS="-H Content-Type:application/json"
+import uuid
+import json
 
-echo "🔧 Creating PropertyKeys..."
+# Function to generate a UUID for each vertex
+def generate_uuid():
+    return str(uuid.uuid4())
 
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "id", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "target_id", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "name", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "phone", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "timestamp", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "duration", "data_type": "INT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "city", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "block", "data_type": "TEXT", "cardinality": "SINGLE"}'
-curl -X POST $API/propertykeys $HEADERS -d '{"name": "location_id", "data_type": "TEXT", "cardinality": "SINGLE"}'
+# Example person data
+people = [
+    {"name": "Alice", "phone": "9781-1234"},
+    {"name": "Bob", "phone": "8769-1234"},
+    {"name": "Jocab", "phone": "8762-1234"},
+    {"name": "Tiffany", "phone": "9873-1234"},
+    {"name": "Peter", "phone": "9898-1234"},
+    {"name": "Sally", "phone": "8749-1239"},
+    {"name": "Wendy", "phone": "9823-1234"},
+    {"name": "Tammy", "phone": "9812-2345"},
+    {"name": "John", "phone": "9823-1234"},
+    {"name": "Julian", "phone": "9872-1235"},
+]
 
-echo "🧩 Creating VertexLabels..."
+# Example locations
+locations = [
+    {"city": "Clementi", "block": "Blk 345"},
+    {"city": "Tampines", "block": "Blk 234"},
+]
 
-curl -X POST $API/vertexlabels $HEADERS -d '{
-  "name": "person",
-  "properties": ["id", "name", "phone"],
-  "primary_keys": ["id"]
-}'
+# Example call data
+calls = [
+    {"caller": "person_1", "target": "person_2", "timestamp": "2025-05-01-080000", "duration": 2, "location": "location_101"},
+    {"caller": "person_1", "target": "person_3", "timestamp": "2025-05-02-081000", "duration": 4, "location": "location_101"},
+]
 
-curl -X POST $API/vertexlabels $HEADERS -d '{
-  "name": "call_event",
-  "properties": ["id", "target_id", "timestamp", "duration", "location_id"],
-  "primary_keys": ["id", "target_id", "timestamp"]
-}'
+# Inserting people vertices
+for person in people:
+    person_id = generate_uuid()  # UUID for person
+    person_vertex = {
+        "id": person_id,
+        "label": "person",
+        "type": "vertex",
+        "properties": {
+            "name": person["name"],
+            "phone": person["phone"]
+        }
+    }
+    print(f"Insert vertex person: {json.dumps(person_vertex)}")
 
-curl -X POST $API/vertexlabels $HEADERS -d '{
-  "name": "location",
-  "properties": ["id", "city", "block"],
-  "primary_keys": ["id"]
-}'
+# Inserting location vertices
+for location in locations:
+    location_id = generate_uuid()  # UUID for location
+    location_vertex = {
+        "id": location_id,
+        "label": "location",
+        "type": "vertex",
+        "properties": {
+            "city": location["city"],
+            "block": location["block"]
+        }
+    }
+    print(f"Insert vertex location: {json.dumps(location_vertex)}")
 
-echo "🔗 Creating EdgeLabels..."
+# Inserting edges with UUIDs for edge IDs
+for call in calls:
+    call_id = generate_uuid()  # UUID for call_event
+    call_event_vertex = {
+        "id": call_id,
+        "label": "call_event",
+        "type": "vertex",
+        "properties": {
+            "timestamp": call["timestamp"],
+            "duration": call["duration"],
+            "caller": call["caller"],
+            "target": call["target"],
+            "location_id": call["location"]
+        }
+    }
+    print(f"Insert vertex call_event: {json.dumps(call_event_vertex)}")
 
-curl -X POST $API/edgelabels $HEADERS -d '{
-  "name": "called",
-  "source_label": "person",
-  "target_label": "person",
-  "properties": ["timestamp", "duration"]
-}'
-
-curl -X POST $API/edgelabels $HEADERS -d '{
-  "name": "made_at",
-  "source_label": "call_event",
-  "target_label": "location"
-}'
-
-echo "📦 Creating IndexLabels..."
-
-curl -X POST $API/indexlabels $HEADERS -d '{
-  "name": "personByPhone",
-  "base_type": "VERTEX_LABEL",
-  "base_value": "person",
-  "index_type": "SECONDARY",
-  "fields": ["phone"]
-}'
-
-curl -X POST $API/indexlabels $HEADERS -d '{
-  "name": "callByTimestamp",
-  "base_type": "VERTEX_LABEL",
-  "base_value": "call_event",
-  "index_type": "SECONDARY",
-  "fields": ["timestamp"]
-}'
-
-echo "✅ Done setting up HugeGraph schema!"
+    # Use UUIDs for edge IDs instead of manual construction
+    from_caller_edge = {
+        "id": generate_uuid(),
+        "label": "from_caller",
+        "type": "edge",
+        "inV": call['target'],
+        "outV": call['caller']
+    }
+    to_target_edge = {
+        "id": generate_uuid(),
+        "label": "to_target",
+        "type": "edge",
+        "inV": call['caller'],
+        "outV": call['target']
+    }
+    print(f"Insert edge from_caller: {json.dumps(from_caller_edge)}")
+    print(f"Insert edge to_target: {json.dumps(to_target_edge)}")
