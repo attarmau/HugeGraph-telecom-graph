@@ -10,3 +10,11 @@ services:
     # PASSWORD is an option to enable auth mode with the password you set.
     ports:
       - 8080:8080
+
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    ports:
+      - 8081:80
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
