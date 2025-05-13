@@ -10,10 +10,7 @@ hugegraph-telecom-graph/
 │   ├── index.html              
 │   ├── graph.js                
 │   ├── style.css  # pending             
-│   └── utils.js   # pending            
-├── schema/
-│   ├── created_schema.groovy           
-│   └── sample_data.groovy   # pending   
+│   └── utils.js   # pending              
 ├── loader/                                
 │   ├── telecom_graph_data.json
 │   ├── insert_data.sh       
