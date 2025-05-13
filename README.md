@@ -38,8 +38,7 @@ docker compose up --build
 cd hugegraph-telecom-graph
 ```
 ```
-chmod +x setup_schema.sh     # (only once)
-./setup_schema.sh
+python3 setup_schema.py
 ```
 By doing so, HugeGraph has your full schema set up:
 * Property keys
@@ -49,8 +48,7 @@ By doing so, HugeGraph has your full schema set up:
 
 # Insert dummy data
 ```
-chmod +x insert_data.sh
-./insert_data.sh
+python3 insert_data.py
 ```
 Check the backend /graph endpoint response:
 ```
