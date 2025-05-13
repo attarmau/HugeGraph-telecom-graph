@@ -21,7 +21,8 @@ hugegraph-telecom-graph/
 │   ├── location.csv                       
 │   └── call.csv                           
 ├── queries/
-│   └── example_queries.txt     
+│   └── example_queries.txt
+├── setup_schema.sh
 ├── README.md                   
 └── architecture.png      
       
