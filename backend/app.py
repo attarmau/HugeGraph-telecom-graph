@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from graph_queries import insert_person, insert_location, insert_call_edge
-from graph_data_api import router as graph_data_router
+from graph_data_api import router as graph_data_router 
 
 app = FastAPI()
 app.include_router(graph_data_router)
@@ -22,7 +22,7 @@ def add_person(person: Person):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-### Location Insertion
+### 📍 Location Insertion
 class Location(BaseModel):
     location_id: str
     name: str
@@ -37,7 +37,7 @@ def add_location(location: Location):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-### Call Edge Insertion
+### 📞 Call Edge Insertion
 class Call(BaseModel):
     caller_id: str
     callee_id: str
