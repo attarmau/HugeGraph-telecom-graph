@@ -1,5 +1,3 @@
-#!/bin/bash
-
 API="http://localhost:8080/graphs/hugegraph/schema"
 HEADERS="-H Content-Type:application/json"
 
