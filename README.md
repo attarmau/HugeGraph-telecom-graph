@@ -9,8 +9,8 @@ hugegraph-telecom-graph/
 ├── frontend/
 │   ├── index.html              
 │   ├── graph.js                
-│   ├── style.css               
-│   └── utils.js                
+│   ├── style.css  # pending             
+│   └── utils.js   # pending            
 ├── schema/
 │   ├── created_schema.groovy           
 │   └── sample_data.groovy      
