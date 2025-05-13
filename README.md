@@ -23,7 +23,8 @@ hugegraph-telecom-graph/
 ├── queries/
 │   └── example_queries.txt
 ├── setup_schema.sh
-├── requirement
+├── requirement.txt
+├── docker-compose.yaml
 ├── README.md                   
 └── architecture.png # pending     
       
