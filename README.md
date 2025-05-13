@@ -10,7 +10,7 @@ hugegraph-telecom-graph/
 ├── frontend/
 │   ├── index.html              
 │   ├── graph.js                
-│   ├── style.css  # pending             
+│   ├── style.css            
 │   └── utils.js   # pending              
 ├── loader/                                
 │   ├── telecom_graph_data.json
