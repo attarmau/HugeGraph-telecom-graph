@@ -1,0 +1,23 @@
+body {
+  display: flex;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+svg {
+  flex: 1;
+  height: 100vh;
+  border-right: 1px solid #ccc;
+}
+
+#info {
+  width: 300px;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.node-label {
+  font-size: 12px;
+  fill: #333;
+  pointer-events: none;
+}
