@@ -52,3 +52,7 @@ By doing so, HugeGraph has your full schema set up:
 chmod +x insert_data.sh
 ./insert_data.sh
 ```
+Check the backend /graph endpoint response:
+```
+curl http://localhost:8000/graph
+```
