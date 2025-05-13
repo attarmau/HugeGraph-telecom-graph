@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from graph_queries import insert_person, insert_location, insert_call_edge
+from graph_data_api import router as graph_data_router
 
 app = FastAPI()
+app.include_router(graph_data_router)
 
 
 ### 🧍 Person Insertion
