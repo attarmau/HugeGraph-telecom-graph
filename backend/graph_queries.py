@@ -1,10 +1,9 @@
 import requests
 import json
-
-BASE_URL = "http://localhost:8080/graphs/telecom"
+from config import HUGEGRAPH_API_BASE, REQUEST_TIMEOUT
 
 def insert_person(person_id, name):
-    url = f"{BASE_URL}/graph/vertices"
+    url = f"{HUGEGRAPH_API_BASE}/graph/vertices"
     data = {
         "label": "person",
         "properties": {
@@ -12,11 +11,11 @@ def insert_person(person_id, name):
             "name": name
         }
     }
-    response = requests.post(url, json=data)
+    response = requests.post(url, json=data, timeout=REQUEST_TIMEOUT)
     return response.json()
 
 def insert_location(loc_id, name, block):
-    url = f"{BASE_URL}/graph/vertices"
+    url = f"{HUGEGRAPH_API_BASE}/graph/vertices"
     data = {
         "label": "location",
         "properties": {
@@ -25,11 +24,11 @@ def insert_location(loc_id, name, block):
             "block": block
         }
     }
-    response = requests.post(url, json=data)
+    response = requests.post(url, json=data, timeout=REQUEST_TIMEOUT)
     return response.json()
 
 def insert_call_edge(caller_id, callee_id, time, duration):
-    url = f"{BASE_URL}/graph/edges"
+    url = f"{HUGEGRAPH_API_BASE}/graph/edges"
     data = {
         "label": "call",
         "outV": caller_id,
@@ -41,5 +40,5 @@ def insert_call_edge(caller_id, callee_id, time, duration):
             "duration": duration
         }
     }
-    response = requests.post(url, json=data)
+    response = requests.post(url, json=data, timeout=REQUEST_TIMEOUT)
     return response.json()
