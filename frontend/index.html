@@ -5,24 +5,50 @@
   <title>Telecom Graph</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    svg { width: 100%; height: 100vh; }
-    circle { fill: #69b3a2; }
-    text { font-size: 12px; }
+    body {
+      display: flex;
+      margin: 0;
+    }
+    svg {
+      flex: 1;
+      height: 100vh;
+      border-right: 1px solid #ccc;
+    }
+    #info {
+      width: 300px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .node-label {
+      font-size: 12px;
+      fill: #333;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
   <svg></svg>
+  <div id="info">
+    <h3>Node Info</h3>
+    <div id="details">Click on a node</div>
+  </div>
 
   <script>
     fetch("http://localhost:8000/graph")
       .then(res => res.json())
       .then(data => {
         const svg = d3.select("svg"),
-              width = window.innerWidth,
+              width = window.innerWidth - 300,
               height = window.innerHeight;
 
+        const colorMap = {
+          person: "#1f77b4",
+          location: "#2ca02c",
+          call: "#ff7f0e"
+        };
+
         const simulation = d3.forceSimulation(data.nodes)
-          .force("link", d3.forceLink(data.links).id(d => d.id).distance(100))
+          .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
           .force("charge", d3.forceManyBody().strength(-300))
           .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -41,21 +67,41 @@
           .data(data.nodes)
           .enter().append("circle")
           .attr("r", 8)
+          .attr("fill", d => colorMap[d.label] || "#ccc")
+          .on("click", showNodeInfo)
           .call(drag(simulation));
 
-        node.append("title").text(d => `${d.label}: ${d.name || d.city || d.id}`);
+        const label = svg.append("g")
+          .selectAll("text")
+          .data(data.nodes)
+          .enter().append("text")
+          .attr("class", "node-label")
+          .text(d => d.name || d.city || d.id);
 
         simulation.on("tick", () => {
           link
-              .attr("x1", d => d.source.x)
-              .attr("y1", d => d.source.y)
-              .attr("x2", d => d.target.x)
-              .attr("y2", d => d.target.y);
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
 
           node
-              .attr("cx", d => d.x)
-              .attr("cy", d => d.y);
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+
+          label
+            .attr("x", d => d.x + 10)
+            .attr("y", d => d.y + 4);
         });
+
+        function showNodeInfo(event, d) {
+          const details = document.getElementById("details");
+          const props = Object.entries(d)
+            .filter(([k]) => !["x", "y", "vx", "vy", "index"].includes(k))
+            .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
+            .join("<br>");
+          details.innerHTML = props;
+        }
 
         function drag(simulation) {
           function dragstarted(event, d) {
