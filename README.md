@@ -13,7 +13,7 @@ hugegraph-telecom-graph/
 │   └── utils.js   # pending            
 ├── schema/
 │   ├── created_schema.groovy           
-│   └── sample_data.groovy      
+│   └── sample_data.groovy   # pending   
 ├── loader/                                
 │   ├── telecom_graph_data.json
 │   ├── insert_data.sh       
