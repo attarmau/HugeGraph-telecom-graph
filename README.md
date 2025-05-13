@@ -29,7 +29,10 @@ hugegraph-telecom-graph/
 ```
 
 To start, please first clone the entire project. After that, follow the instructions below.
-
+# Start all services
+```
+docker compose up --build
+```
 # Create Schema
 ```
 cd hugegraph-telecom-graph
