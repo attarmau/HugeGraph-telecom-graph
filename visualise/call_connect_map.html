@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Call Frequency Map Visualization</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+    }
+    .popup {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Dummy person locations in Singapore
+const people = [
+  { id: "+6591234567", name: "Alice", location: "Clementi", lat: 1.3151, lng: 103.7658 },
+  { id: "+6598765432", name: "Bob", location: "Jurong East", lat: 1.3331, lng: 103.7430 },
+  { id: "+6587654321", name: "Charlie", location: "Bukit Timah", lat: 1.3294, lng: 103.8021 },
+  { id: "+6581234567", name: "Daisy", location: "Ang Mo Kio", lat: 1.3691, lng: 103.8454 },
+  { id: "+6593333333", name: "Eve", location: "Woodlands", lat: 1.4360, lng: 103.7865 },
+  { id: "+6599998888", name: "Frank", location: "Tampines", lat: 1.3522, lng: 103.9454 },
+  { id: "+6588000001", name: "Grace", location: "Yishun", lat: 1.4294, lng: 103.8350 },
+  { id: "+6588000002", name: "Harry", location: "Pasir Ris", lat: 1.3733, lng: 103.9496 },
+  { id: "+6588000003", name: "Ivy", location: "Toa Payoh", lat: 1.3321, lng: 103.8480 },
+  { id: "+6588000004", name: "Jack", location: "Hougang", lat: 1.3736, lng: 103.8867 },
+  { id: "+6588000005", name: "Kathy", location: "Sengkang", lat: 1.3911, lng: 103.8951 },
+  { id: "+6588000006", name: "Leo", location: "Bedok", lat: 1.3245, lng: 103.9301 },
+  { id: "+6588000007", name: "Mia", location: "Changi", lat: 1.3644, lng: 103.9915 },
+  { id: "+6588000008", name: "Noah", location: "Punggol", lat: 1.4043, lng: 103.9028 },
+  { id: "+6588000009", name: "Olivia", location: "Kallang", lat: 1.3121, lng: 103.8660 },
+  { id: "+6588000010", name: "Peter", location: "Bugis", lat: 1.3005, lng: 103.8550 },
+  { id: "+6588000011", name: "Quinn", location: "Marine Parade", lat: 1.3035, lng: 103.9067 },
+  { id: "+6588000012", name: "Ruth", location: "Tanglin", lat: 1.3070, lng: 103.8125 },
+  { id: "+6588000013", name: "Steve", location: "Bukit Merah", lat: 1.2787, lng: 103.8239 },
+  { id: "+6588000014", name: "Tina", location: "Outram", lat: 1.2804, lng: 103.8392 },
+  { id: "+6588000015", name: "Uma", location: "Rochor", lat: 1.3068, lng: 103.8524 },
+  { id: "+6588000016", name: "Victor", location: "Bukit Batok", lat: 1.3483, lng: 103.7498 },
+  { id: "+6588000017", name: "Wendy", location: "Serangoon", lat: 1.3500, lng: 103.8700 },
+  { id: "+6588000018", name: "Xavier", location: "Downtown Core", lat: 1.2835, lng: 103.8510 },
+  { id: "+6588000019", name: "Yara", location: "Novena", lat: 1.3206, lng: 103.8432 },
+  { id: "+6588000020", name: "Zack", location: "Bukit Panjang", lat: 1.3784, lng: 103.7635 },
+  { id: "+6588000021", name: "Aiden", location: "Queenstown", lat: 1.2944, lng: 103.7876 },
+  { id: "+6588000022", name: "Bella", location: "Redhill", lat: 1.2871, lng: 103.8163 },
+  { id: "+6588000023", name: "Cody", location: "Jurong West", lat: 1.3439, lng: 103.6978 },
+  { id: "+6588000024", name: "Dana", location: "Bishan", lat: 1.3516, lng: 103.8485 },
+  { id: "+6588000025", name: "Eli", location: "Seletar", lat: 1.3925, lng: 103.8706 },
+  { id: "+6588000026", name: "Fiona", location: "Geylang", lat: 1.3112, lng: 103.8841 },
+  { id: "+6588000027", name: "George", location: "HarbourFront", lat: 1.2650, lng: 103.8201 },
+  { id: "+6588000028", name: "Hannah", location: "Telok Blangah", lat: 1.2712, lng: 103.8116 },
+  { id: "+6588000029", name: "Isaac", location: "Mountbatten", lat: 1.3030, lng: 103.8840 },
+  { id: "+6588000030", name: "Jasmine", location: "Orchard", lat: 1.3048, lng: 103.8318 },
+  { id: "+6588000031", name: "Kevin", location: "Simei", lat: 1.3430, lng: 103.9530 },
+  { id: "+6588000032", name: "Lily", location: "Aljunied", lat: 1.3164, lng: 103.8874 },
+  { id: "+6588000033", name: "Mason", location: "Newton", lat: 1.3112, lng: 103.8378 },
+  { id: "+6588000034", name: "Nora", location: "Chinatown", lat: 1.2836, lng: 103.8433 },
+  { id: "+6588000035", name: "Oscar", location: "Raffles Place", lat: 1.2832, lng: 103.8518 },
+  { id: "+6588000036", name: "Pam", location: "Tiong Bahru", lat: 1.2867, lng: 103.8282 },
+  { id: "+6588000037", name: "Ron", location: "Joo Chiat", lat: 1.3064, lng: 103.9050 },
+  { id: "+6588000038", name: "Sara", location: "Little India", lat: 1.3069, lng: 103.8517 },
+  { id: "+6588000039", name: "Tom", location: "Katong", lat: 1.3050, lng: 103.9040 },
+  { id: "+6588000040", name: "Ursula", location: "Labrador Park", lat: 1.2724, lng: 103.8010 },
+  { id: "+6588000041", name: "Vince", location: "Hillview", lat: 1.3624, lng: 103.7640 },
+  { id: "+6588000042", name: "Willow", location: "Commonwealth", lat: 1.3020, lng: 103.7980 },
+  { id: "+6588000043", name: "Xena", location: "MacPherson", lat: 1.3262, lng: 103.8916 },
+  { id: "+6588000044", name: "Yusuf", location: "Kovan", lat: 1.3596, lng: 103.8838 },
+  { id: "+6588000045", name: "Zoe", location: "Bartley", lat: 1.3426, lng: 103.8810 }
+];
+
+
+
+const calls = [
+  { from: "+6591234567", to: "+6598765432", time: "2025-05-14 08:12", duration: "180s" },
+  { from: "+6591234567", to: "+6587654321", time: "2025-05-14 10:03", duration: "45s" },
+  { from: "+6581234567", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6587654321", to: "+6593333333", time: "2025-05-13 21:00", duration: "300s" },
+  { from: "+6599998888", to: "+6591234567", time: "2025-05-13 19:45", duration: "60s" },
+  { from: "+6591234567", to: "+6581234567", time: "2025-05-13 16:30", duration: "120s" },
+  { from: "+6598765432", to: "+6591234567", time: "2025-05-14 08:45", duration: "150s" },
+  { from: "+6593333333", to: "+6598765432", time: "2025-05-13 22:30", duration: "200s" },
+
+  { from: "+6588000001", to: "+6591234567", time: "2025-05-14 09:10", duration: "210s" },
+  { from: "+6588000002", to: "+6598765432", time: "2025-05-14 11:12", duration: "90s" },
+  { from: "+6588000003", to: "+6587654321", time: "2025-05-14 12:15", duration: "135s" },
+  { from: "+6588000004", to: "+6591234567", time: "2025-05-14 13:30", duration: "170s" },
+  { from: "+6588000005", to: "+6581234567", time: "2025-05-14 14:05", duration: "180s" },
+  { from: "+6588000006", to: "+6593333333", time: "2025-05-14 15:20", duration: "150s" },
+  { from: "+6588000007", to: "+6599998888", time: "2025-05-14 16:40", duration: "120s" },
+  { from: "+6588000008", to: "+6598765432", time: "2025-05-14 17:25", duration: "90s" },
+  { from: "+6588000009", to: "+6591234567", time: "2025-05-14 18:10", duration: "75s" },
+  { from: "+6588000010", to: "+6593333333", time: "2025-05-14 19:00", duration: "105s" },
+  { from: "+6588000011", to: "+6581234567", time: "2025-05-14 20:30", duration: "125s" },
+  { from: "+6588000012", to: "+6599998888", time: "2025-05-14 21:00", duration: "110s" },
+  { from: "+6588000013", to: "+6591234567", time: "2025-05-14 22:45", duration: "115s" },
+  { from: "+6588000014", to: "+6598765432", time: "2025-05-15 09:00", duration: "95s" },
+  { from: "+6588000015", to: "+6593333333", time: "2025-05-15 09:30", duration: "100s" },
+  { from: "+6588000016", to: "+6587654321", time: "2025-05-15 10:20", duration: "180s" },
+  { from: "+6588000017", to: "+6598765432", time: "2025-05-15 11:00", duration: "85s" },
+  { from: "+6588000018", to: "+6599998888", time: "2025-05-15 11:45", duration: "95s" },
+  { from: "+6588000019", to: "+6591234567", time: "2025-05-15 12:30", duration: "130s" },
+  { from: "+6588000020", to: "+6581234567", time: "2025-05-15 13:05", duration: "160s" },
+  { from: "+6588000021", to: "+6593333333", time: "2025-05-15 14:40", duration: "200s" },
+  { from: "+6588000022", to: "+6599998888", time: "2025-05-15 15:10", duration: "110s" },
+  { from: "+6588000023", to: "+6591234567", time: "2025-05-15 16:00", duration: "120s" },
+  { from: "+6588000024", to: "+6598765432", time: "2025-05-15 16:55", duration: "115s" },
+  { from: "+6588000025", to: "+6593333333", time: "2025-05-15 17:30", duration: "105s" },
+  { from: "+6588000026", to: "+6587654321", time: "2025-05-15 18:10", duration: "135s" },
+  { from: "+6588000027", to: "+6591234567", time: "2025-05-15 19:40", duration: "180s" },
+  { from: "+6588000028", to: "+6593333333", time: "2025-05-15 20:00", duration: "140s" },
+  { from: "+6588000029", to: "+6599998888", time: "2025-05-15 21:00", duration: "100s" },
+  { from: "+6588000030", to: "+6591234567", time: "2025-05-15 22:10", duration: "150s" },
+  { from: "+6588000031", to: "+6598765432", time: "2025-05-15 23:00", duration: "120s" },
+  { from: "+6588000032", to: "+6593333333", time: "2025-05-16 09:15", duration: "130s" },
+  { from: "+6588000033", to: "+6599998888", time: "2025-05-16 10:25", duration: "115s" },
+  { from: "+6588000034", to: "+6591234567", time: "2025-05-16 11:10", duration: "140s" },
+  { from: "+6588000035", to: "+6593333333", time: "2025-05-16 12:05", duration: "160s" },
+  { from: "+6588000036", to: "+6598765432", time: "2025-05-16 13:00", duration: "170s" },
+  { from: "+6588000037", to: "+6599998888", time: "2025-05-16 13:30", duration: "110s" },
+  { from: "+6588000038", to: "+6591234567", time: "2025-05-16 14:10", duration: "120s" },
+  { from: "+6588000039", to: "+6598765432", time: "2025-05-16 15:00", duration: "140s" },
+  { from: "+6588000040", to: "+6593333333", time: "2025-05-16 15:40", duration: "110s" }
+];
+
+
+const map = L.map('map').setView([1.3521, 103.8198], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const personMap = {};
+people.forEach(person => {
+  const marker = L.marker([person.lat, person.lng])
+    .addTo(map)
+    .bindPopup(`<b>${person.name}</b><br/>${person.id}<br/>Location: ${person.location}`);
+  personMap[person.id] = person;
+});
+
+const callFrequency = {};
+
+calls.forEach(call => {
+  const pairKey = [call.from, call.to].sort().join('-');  
+  if (!callFrequency[pairKey]) {
+    callFrequency[pairKey] = 0;
+  }
+  callFrequency[pairKey] += 1; 
+});
+
+Object.entries(callFrequency).forEach(([pairKey, frequency]) => {
+  const [from, to] = pairKey.split('-');
+  const fromPerson = personMap[from];
+  const toPerson = personMap[to];
+
+  if (!fromPerson || !toPerson) return;
+
+  const lineWidth = Math.min(frequency * 2, 10); 
+
+  const line = L.polyline([ [fromPerson.lat, fromPerson.lng], [toPerson.lat, toPerson.lng] ], {
+    color: 'blue',
+    weight: lineWidth,
+    opacity: 0.6
+  }).addTo(map);
+
+  line.bindPopup(`
+    <div class="popup">
+      <strong>Call Frequency Info</strong><br/>
+      From: ${fromPerson.name} (${fromPerson.id})<br/>
+      To: ${toPerson.name} (${toPerson.id})<br/>
+      Call Frequency: ${frequency} calls<br/>
+    </div>
+  `);
+});
+</script>
+</body>
+</html>
