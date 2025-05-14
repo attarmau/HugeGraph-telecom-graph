@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call Timeline Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #f9f9f9;
+      }
+      .dot {
+        stroke: #333;
+        stroke-width: 1px;
+      }
+      .tooltip {
+        position: absolute;
+        text-align: left;
+        background: white;
+        padding: 6px;
+        border: 1px solid #ccc;
+        font-size: 12px;
+        pointer-events: none;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 style="text-align:center;">Call Timeline</h2>
+    <svg width="960" height="500"></svg>
+    <script>
+      const svg = d3.select("svg");
+      const width = +svg.attr("width");
+      const height = +svg.attr("height");
+      const margin = { top: 50, right: 30, bottom: 50, left: 150 };
+
+      const data = [
+        { source: "+6591234567", target: "+6598765432", direction: "MO", duration: 180, telco: "Singtel", time: "2025-05-14T08:12" },
+        { source: "+6591234567", target: "+6587654321", direction: "MO", duration: 45, telco: "Singtel", time: "2025-05-14T10:03" },
+        { source: "+6581234567", target: "+6591234567", direction: "MT", duration: 95, telco: "Singtel", time: "2025-05-14T12:01" },
+        { source: "+6587654321", target: "+6593333333", direction: "MO", duration: 300, telco: "M1", time: "2025-05-13T21:00" },
+        { source: "+6599998888", target: "+6591234567", direction: "MT", duration: 60, telco: "Starhub", time: "2025-05-13T19:45" },
+        { source: "+6582221111", target: "+6587654321", direction: "MO", duration: 240, telco: "Singtel", time: "2025-05-14T14:30" }, 
+        { source: "+6598765432", target: "+6582221111", direction: "MT", duration: 150, telco: "M1", time: "2025-05-14T15:00" },    
+        { source: "+6598887777", target: "+6591234567", direction: "MO", duration: 600, telco: "Starhub", time: "2025-05-13T08:00" }, 
+        { source: "+6593333333", target: "+6598887777", direction: "MT", duration: 200, telco: "Singtel", time: "2025-05-14T20:15" }, 
+        { source: "+6585554444", target: "+6599998888", direction: "MO", duration: 30, telco: "M1", time: "2025-05-14T06:50" },       
+        { source: "+6585554444", target: "+6582221111", direction: "MO", duration: 100, telco: "M1", time: "2025-05-13T18:20" },     
+        { source: "+6580009999", target: "+6585554444", direction: "MT", duration: 80, telco: "Starhub", time: "2025-05-14T16:45" },  
+        { source: "+6580009999", target: "+6598765432", direction: "MT", duration: 70, telco: "Singtel", time: "2025-05-13T13:25" },
+        { source: "+6580001234", target: "+6580005678", direction: "MO", duration: 120, telco: "Singtel", time: "2025-05-12T08:00" },
+        { source: "+6580001234", target: "+6591234567", direction: "MO", duration: 220, telco: "Starhub", time: "2025-05-12T08:05" },
+        { source: "+6598765432", target: "+6580001234", direction: "MT", duration: 90, telco: "M1", time: "2025-05-12T08:10" },
+        { source: "+6594444444", target: "+6580005678", direction: "MO", duration: 300, telco: "M1", time: "2025-05-12T09:00" },
+        { source: "+6582223333", target: "+6599998888", direction: "MO", duration: 80, telco: "Singtel", time: "2025-05-12T09:30" },
+        { source: "+6585554444", target: "+6582221111", direction: "MT", duration: 150, telco: "M1", time: "2025-05-12T10:10" },
+        { source: "+6582221111", target: "+6598887777", direction: "MO", duration: 200, telco: "Starhub", time: "2025-05-12T10:20" },
+        { source: "+6591234567", target: "+6589998888", direction: "MO", duration: 180, telco: "Singtel", time: "2025-05-12T10:30" },
+        { source: "+6580005678", target: "+6594444444", direction: "MT", duration: 60, telco: "Starhub", time: "2025-05-12T11:00" },
+        { source: "+6589998888", target: "+6598765432", direction: "MO", duration: 75, telco: "M1", time: "2025-05-12T11:45" },
+        { source: "+6583332222", target: "+6580001234", direction: "MO", duration: 110, telco: "Singtel", time: "2025-05-12T12:00" },
+        { source: "+6590000001", target: "+6590000002", direction: "MO", duration: 240, telco: "Starhub", time: "2025-05-12T12:30" },
+        { source: "+6590000002", target: "+6590000001", direction: "MT", duration: 220, telco: "Starhub", time: "2025-05-12T12:35" },
+        { source: "+6590000003", target: "+6590000004", direction: "MO", duration: 90, telco: "M1", time: "2025-05-12T13:00" },
+        { source: "+6590000005", target: "+6590000006", direction: "MO", duration: 100, telco: "Singtel", time: "2025-05-12T13:20" },
+        { source: "+6590000006", target: "+6590000005", direction: "MT", duration: 100, telco: "Singtel", time: "2025-05-12T13:25" },
+        { source: "+6591234567", target: "+6580009999", direction: "MO", duration: 310, telco: "Singtel", time: "2025-05-12T14:00" },
+        { source: "+6587654321", target: "+6580009999", direction: "MT", duration: 50, telco: "M1", time: "2025-05-12T14:15" },
+        { source: "+6598887777", target: "+6582221111", direction: "MO", duration: 360, telco: "Starhub", time: "2025-05-12T15:00" },
+        { source: "+6580005678", target: "+6591234567", direction: "MO", duration: 400, telco: "M1", time: "2025-05-12T15:30" },
+        { source: "+6580001234", target: "+6580005678", direction: "MO", duration: 130, telco: "Singtel", time: "2025-05-13T08:30" },
+        { source: "+6590000001", target: "+6590000002", direction: "MT", duration: 60, telco: "Starhub", time: "2025-05-13T09:15" },
+        { source: "+6590000003", target: "+6590000004", direction: "MT", duration: 55, telco: "Singtel", time: "2025-05-13T09:45" },
+        { source: "+6589998888", target: "+6593333333", direction: "MO", duration: 140, telco: "Singtel", time: "2025-05-13T10:00" },
+        { source: "+6583332222", target: "+6598765432", direction: "MO", duration: 500, telco: "Starhub", time: "2025-05-13T10:30" },
+        { source: "+6594444444", target: "+6590000001", direction: "MO", duration: 260, telco: "M1", time: "2025-05-13T11:00" },
+        { source: "+6590000005", target: "+6590000006", direction: "MO", duration: 230, telco: "Singtel", time: "2025-05-13T11:30" },
+        { source: "+6580005678", target: "+6580001234", direction: "MT", duration: 120, telco: "M1", time: "2025-05-13T12:00" },
+        { source: "+6582223333", target: "+6598887777", direction: "MO", duration: 180, telco: "Starhub", time: "2025-05-13T13:00" },
+        { source: "+6583332222", target: "+6585554444", direction: "MT", duration: 95, telco: "Singtel", time: "2025-05-13T13:30" },
+        { source: "+6580009999", target: "+6591234567", direction: "MO", duration: 600, telco: "M1", time: "2025-05-13T14:00" },
+        { source: "+6599998888", target: "+6582221111", direction: "MT", duration: 310, telco: "Starhub", time: "2025-05-13T14:20" },
+        { source: "+6590000001", target: "+6580005678", direction: "MO", duration: 275, telco: "Singtel", time: "2025-05-13T15:00" },
+        { source: "+6582223333", target: "+6590000004", direction: "MO", duration: 210, telco: "M1", time: "2025-05-13T15:20" },
+        { source: "+6598765432", target: "+6594444444", direction: "MT", duration: 150, telco: "Starhub", time: "2025-05-13T16:00" },
+        { source: "+6580001234", target: "+6589998888", direction: "MO", duration: 350, telco: "Singtel", time: "2025-05-13T16:30" },
+        { source: "+6593333333", target: "+6582223333", direction: "MT", duration: 100, telco: "M1", time: "2025-05-13T17:00" },
+        { source: "+6589998888", target: "+6590000002", direction: "MO", duration: 80, telco: "Singtel", time: "2025-05-13T17:30" },
+        { source: "+6580001234", target: "+6590000001", direction: "MO", duration: 200, telco: "Starhub", time: "2025-05-13T18:00" },
+        { source: "+6590000004", target: "+6590000005", direction: "MT", duration: 160, telco: "M1", time: "2025-05-14T08:00" },
+        { source: "+6598887777", target: "+6590000006", direction: "MO", duration: 310, telco: "Singtel", time: "2025-05-14T08:30" },
+        { source: "+6583332222", target: "+6590000001", direction: "MO", duration: 400, telco: "M1", time: "2025-05-14T09:00" },
+        { source: "+6580005678", target: "+6580009999", direction: "MO", duration: 60, telco: "Singtel", time: "2025-05-14T09:20" },
+        { source: "+6582221111", target: "+6590000004", direction: "MT", duration: 200, telco: "Starhub", time: "2025-05-14T09:50" },
+        { source: "+6590000002", target: "+6590000003", direction: "MO", duration: 300, telco: "M1", time: "2025-05-14T10:00" },
+        { source: "+6590000003", target: "+6591234567", direction: "MT", duration: 330, telco: "Singtel", time: "2025-05-14T10:15" },
+        { source: "+6590000005", target: "+6590000006", direction: "MO", duration: 280, telco: "Starhub", time: "2025-05-14T10:45" },
+        { source: "+6589998888", target: "+6582221111", direction: "MT", duration: 310, telco: "Singtel", time: "2025-05-14T11:00" }
+      ];
+
+      const parseTime = d3.utcParse("%Y-%m-%dT%H:%M");
+      data.forEach((d) => (d.parsedTime = parseTime(d.time)));
+
+      const allNumbers = Array.from(
+        new Set(data.flatMap((d) => [d.source, d.target]))
+      );
+
+      const x = d3
+        .scaleTime()
+        .domain(d3.extent(data, (d) => d.parsedTime))
+        .range([margin.left, width - margin.right]);
+
+      const y = d3
+        .scalePoint()
+        .domain(allNumbers)
+        .range([margin.top, height - margin.bottom]);
+
+      const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      const tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+      svg
+        .selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", (d) => x(d.parsedTime))
+        .attr("cy", (d) => y(d.source))
+        .attr("r", (d) => Math.sqrt(d.duration) / 2)
+        .attr("fill", (d) => color(d.telco))
+        .on("mouseover", function (event, d) {
+          tooltip
+            .style("opacity", 1)
+            .html(
+              `📞 ${d.source} → ${d.target}<br>
+               🕒 ${d.time}<br>
+               ⏱️ ${d.duration}s<br>
+               🏢 ${d.telco}`
+            )
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 28 + "px");
+        })
+        .on("mouseout", function () {
+          tooltip.style("opacity", 0);
+        });
+
+      svg
+        .append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x));
+
+      svg
+        .append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y));
+    </script>
+  </body>
+</html>
