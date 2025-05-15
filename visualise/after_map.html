@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Call Frequency Map Visualization</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+    }
+    .popup {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Dummy person locations in Singapore
+const people = [
+  { id: "+6591234567", name: "Alice", location: "Clementi", lat: 1.3151, lng: 103.7658 },
+  { id: "+6598765432", name: "Bob", location: "Jurong East", lat: 1.3331, lng: 103.7430 },
+  { id: "+6581234567", name: "Daisy", location: "Ang Mo Kio", lat: 1.3691, lng: 103.8454 },
+  { id: "+6593333333", name: "Eve", location: "Woodlands", lat: 1.4360, lng: 103.7865 },
+  { id: "+6599998888", name: "Frank", location: "Tampines", lat: 1.3522, lng: 103.9454 },
+  { id: "+6588000011", name: "Quinn", location: "Marine Parade", lat: 1.3035, lng: 103.9067 },
+  { id: "+6588000015", name: "Uma", location: "Rochor", lat: 1.3068, lng: 103.8524 },
+  { id: "+6588000022", name: "Bella", location: "Redhill", lat: 1.2871, lng: 103.8163 },
+  { id: "+6588000038", name: "Sara", location: "Little India", lat: 1.3069, lng: 103.8517 }
+];
+
+
+
+const calls = [
+  { from: "+6591234567", to: "+6598765432", time: "2025-05-14 08:12", duration: "180s" },
+  { from: "+6591234567", to: "+6587654321", time: "2025-05-14 10:03", duration: "45s" },
+  { from: "+6591234567", to: "+6588000022", time: "2025-05-14 10:03", duration: "45s" },
+  { from: "+6591234567", to: "+6588000022", time: "2025-05-14 10:03", duration: "45s" },
+  { from: "+6581234567", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6581234567", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6581234567", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6581234567", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6581234567", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6588000007", to: "+6591234567", time: "2025-05-14 12:01", duration: "95s" },
+  { from: "+6587654321", to: "+6593333333", time: "2025-05-13 21:00", duration: "300s" },
+  { from: "+6599998888", to: "+6591234567", time: "2025-05-13 19:45", duration: "60s" },
+  { from: "+6591234567", to: "+6599998888", time: "2025-05-13 16:30", duration: "120s" },
+  { from: "+6593333333", to: "+6598765432", time: "2025-05-13 22:30", duration: "200s" },
+  { from: "+6598765432", to: "+6591234567", time: "2025-05-14 08:45", duration: "150s" },
+  { from: "+6593333333", to: "+6598765432", time: "2025-05-13 22:30", duration: "200s" },
+  { from: "+6588000001", to: "+6591234567", time: "2025-05-14 09:10", duration: "210s" },
+  { from: "+6588000002", to: "+6598765432", time: "2025-05-14 11:12", duration: "90s" },
+  { from: "+6588000011", to: "+6581234567", time: "2025-05-14 20:30", duration: "125s" },
+  { from: "+6588000011", to: "+6581234567", time: "2025-05-14 20:30", duration: "125s" },
+  { from: "+6588000011", to: "+6588000022", time: "2025-05-14 20:30", duration: "125s" },
+  { from: "+6588000011", to: "+6588000022", time: "2025-05-14 20:30", duration: "125s" },
+  { from: "+6588000015", to: "+6593333333", time: "2025-05-15 09:30", duration: "100s" },
+  { from: "+6588000015", to: "+6593333333", time: "2025-05-15 09:30", duration: "100s" },
+  { from: "+6588000022", to: "+6599998888", time: "2025-05-15 15:10", duration: "110s" },
+  { from: "+6588000022", to: "+6599998888", time: "2025-05-15 15:10", duration: "110s" },
+  { from: "+6588000022", to: "+6599998888", time: "2025-05-15 15:10", duration: "110s" },
+  { from: "+6588000023", to: "+6591234567", time: "2025-05-15 16:00", duration: "120s" },
+  { from: "+6588000024", to: "+6598765432", time: "2025-05-15 16:55", duration: "115s" },
+  { from: "+6588000025", to: "+6593333333", time: "2025-05-15 17:30", duration: "105s" },
+  { from: "+6588000030", to: "+6591234567", time: "2025-05-15 22:10", duration: "150s" },
+  { from: "+6588000031", to: "+6598765432", time: "2025-05-15 23:00", duration: "120s" },
+  { from: "+6588000032", to: "+6593333333", time: "2025-05-16 09:15", duration: "130s" },
+  { from: "+6588000033", to: "+6599998888", time: "2025-05-16 10:25", duration: "115s" },
+  { from: "+6588000034", to: "+6591234567", time: "2025-05-16 11:10", duration: "140s" },
+  { from: "+6588000035", to: "+6593333333", time: "2025-05-16 12:05", duration: "160s" },
+  { from: "+6588000038", to: "+6591234567", time: "2025-05-16 14:10", duration: "120s" },
+  { from: "+6588000038", to: "+6591234567", time: "2025-05-16 14:10", duration: "120s" }
+];
+
+
+const map = L.map('map').setView([1.3521, 103.8198], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const personMap = {};
+people.forEach(person => {
+  const marker = L.marker([person.lat, person.lng])
+    .addTo(map)
+    .bindPopup(`<b>${person.name}</b><br/>${person.id}<br/>Location: ${person.location}`);
+  personMap[person.id] = person;
+});
+
+const callFrequency = {};
+
+calls.forEach(call => {
+  const pairKey = [call.from, call.to].sort().join('-');  
+  if (!callFrequency[pairKey]) {
+    callFrequency[pairKey] = 0;
+  }
+  callFrequency[pairKey] += 1; 
+});
+
+Object.entries(callFrequency).forEach(([pairKey, frequency]) => {
+  const [from, to] = pairKey.split('-');
+  const fromPerson = personMap[from];
+  const toPerson = personMap[to];
+
+  if (!fromPerson || !toPerson) return;
+
+  const lineWidth = Math.min(frequency * 2, 10); 
+
+  const line = L.polyline([ [fromPerson.lat, fromPerson.lng], [toPerson.lat, toPerson.lng] ], {
+    color: 'blue',
+    weight: lineWidth,
+    opacity: 0.6
+  }).addTo(map);
+
+  line.bindPopup(`
+    <div class="popup">
+      <strong>Call Frequency Info</strong><br/>
+      From: ${fromPerson.name} (${fromPerson.id})<br/>
+      To: ${toPerson.name} (${toPerson.id})<br/>
+      Call Frequency: ${frequency} calls<br/>
+    </div>
+  `);
+});
+</script>
+</body>
+</html>
