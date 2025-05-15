@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Telecom Call Graph</title>
+  <script src="https://unpkg.com/cytoscape@3.24.0/dist/cytoscape.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f5f5f5;
+    }
+    #cy {
+      width: 100%;
+      height: 100vh;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="cy"></div>
+
+  <script>
+    const data = {
+      nodes: [
+        { data: { id: "+6591234567", telco: "Singtel", location: "Clementi" } },
+        { data: { id: "+6598765432", telco: "Starhub", location: "Jurong East" } },
+        { data: { id: "+6587654321", telco: "M1", location: "Bukit Timah" } },
+        { data: { id: "+6581234567", telco: "Singtel", location: "Ang Mo Kio" } },
+        { data: { id: "+6593333333", telco: "M1", location: "Woodlands" } },
+        { data: { id: "+6599998888", telco: "Starhub", location: "Tampines" } },
+        { data: { id: "+6588111222", telco: "Singtel", location: "Hougang" } },
+        { data: { id: "+6588222333", telco: "M1", location: "Toa Payoh" } },
+        { data: { id: "+6588333444", telco: "Starhub", location: "Punggol" } },
+        { data: { id: "+6588444555", telco: "M1", location: "Serangoon" } },
+        { data: { id: "+6588555666", telco: "Singtel", location: "Pasir Ris" } },
+        { data: { id: "+6588666777", telco: "Starhub", location: "Yishun" } },
+        { data: { id: "+6588777888", telco: "Singtel", location: "Bedok" } },
+        { data: { id: "+6588888999", telco: "M1", location: "Choa Chu Kang" } },
+        { data: { id: "+6588999000", telco: "Singtel", location: "Bukit Batok" } },
+        { data: { id: "+6588000111", telco: "Starhub", location: "Kallang" } },
+        { data: { id: "+6588000222", telco: "Singtel", location: "Marine Parade" } },
+        { data: { id: "+6588000333", telco: "M1", location: "Sembawang" } },
+        { data: { id: "+6588000444", telco: "Starhub", location: "Queenstown" } },
+        { data: { id: "+6588000555", telco: "M1", location: "Tanjong Pagar" } },
+        { data: { id: "+6588000666", telco: "Singtel", location: "Bukit Merah" } },
+        { data: { id: "+6588000777", telco: "Starhub", location: "Outram" } },
+        { data: { id: "+6588000888", telco: "Singtel", location: "Geylang" } },
+        { data: { id: "+6588000999", telco: "M1", location: "Novena" } },
+        { data: { id: "+6588001000", telco: "Starhub", location: "Orchard" } },
+        { data: { id: "+6588001112", telco: "M1", location: "Simei" } },
+        { data: { id: "+6588001223", telco: "Singtel", location: "Aljunied" } },
+        { data: { id: "+6588001334", telco: "Starhub", location: "Little India" } },
+        { data: { id: "+6588001445", telco: "M1", location: "Redhill" } },
+        { data: { id: "+6588001556", telco: "Singtel", location: "Tiong Bahru" } },
+        { data: { id: "+6588001667", telco: "Starhub", location: "HarbourFront" } },
+        { data: { id: "+6588001778", telco: "Singtel", location: "Bugis" } },
+        { data: { id: "+6588001889", telco: "M1", location: "Dhoby Ghaut" } },
+        { data: { id: "+6588001990", telco: "Singtel", location: "City Hall" } },
+        { data: { id: "+6588002001", telco: "Starhub", location: "Bras Basah" } },
+        { data: { id: "+6588123456", telco: "Starhub", location: "Yio Chu Kang" } },
+        { data: { id: "+6599111122", telco: "M1", location: "Queenstown" } },
+        { data: { id: "+6588777666", telco: "Singtel", location: "Kovan" } },
+        { data: { id: "+6588002112", telco: "M1", location: "Raffles Place" } },
+        { data: { id: "+6512345677", telco: "M1", location: "Raffles Place" } },
+        { data: { id: "+6512345679", telco: "M1", location: "Raffles Place" } },
+        { data: { id: "+6512345697", telco: "M1", location: "Raffles Place" } },
+        { data: { id: "+6588999011", telco: "Singtel", location: "Katong" } },
+        { data: { id: "+6588999012", telco: "Starhub", location: "Hillview" } },
+        { data: { id: "+6588999013", telco: "Starhub", location: "Queenstown" } },
+        
+        
+      ],
+      edges: [
+        { data: { source: "+6591234567", target: "+6598765432", duration: "180s", time: "2025-05-14 08:12", relationship: "family" } },
+        { data: { source: "+6591234567", target: "+6598765432", duration: "180s", time: "2025-05-14 08:12", relationship: "family" } },
+        { data: { source: "+6598765432", target: "+6591234567", duration: "120s", time: "2025-05-14 13:12", relationship: "family" } },
+        { data: { source: "+6591234567", target: "+6587654321", duration: "45s", time: "2025-05-14 10:03", relationship: "friend" } },
+        { data: { source: "+6591234567", target: "+6588123456", duration: "60s", time: "2025-05-14 11:00", relationship: "colleague" } },
+        { data: { source: "+6588123456", target: "+6598765432", duration: "75s", time: "2025-05-14 12:00", relationship: "unknown" } },
+        { data: { source: "+6598765432", target: "+6588333444", duration: "90s", time: "2025-05-14 14:00", relationship: "family" } },
+        { data: { source: "+6587654321", target: "+6599111122", duration: "30s", time: "2025-05-14 09:15", relationship: "friend" } },
+        { data: { source: "+6599111122", target: "+6588777666", duration: "50s", time: "2025-05-14 15:30", relationship: "colleague" } },
+        { data: { source: "+6588777666", target: "+6591234567", duration: "40s", time: "2025-05-14 16:45", relationship: "unknown" } },
+        { data: { source: "+6581234567", target: "+6588222333", duration: "95s", time: "2025-05-14 12:01", relationship: "friend" } },
+        { data: { source: "+6588222333", target: "+6588111222", duration: "120s", time: "2025-05-13 10:00", relationship: "family" } },
+        { data: { source: "+6588333444", target: "+6588444555", duration: "90s", time: "2025-05-13 11:15", relationship: "colleague" } },
+        { data: { source: "+6588555666", target: "+6588666777", duration: "240s", time: "2025-05-13 09:00", relationship: "friend" } },
+        { data: { source: "+6588777888", target: "+6588888999", duration: "180s", time: "2025-05-13 15:45", relationship: "unknown" } },
+        { data: { source: "+6588999000", target: "+6588000111", duration: "300s", time: "2025-05-13 17:00", relationship: "family" } },
+        { data: { source: "+6588111222", target: "+6588444555", duration: "60s", time: "2025-05-14 08:45", relationship: "colleague" } },
+        { data: { source: "+6588555666", target: "+6588666777", duration: "240s", time: "2025-05-13 09:00", relationship: "friend" } },
+        { data: { source: "+6588777888", target: "+6588888999", duration: "180s", time: "2025-05-13 15:45", relationship: "unknown" } },
+        { data: { source: "+6588999000", target: "+6588000111", duration: "300s", time: "2025-05-13 17:00", relationship: "family" } },
+        { data: { source: "+6588000555", target: "+6588000333", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000555", target: "+6588555666", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6588000111", target: "+6588777888", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000111", target: "+6588999000", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6588000888", target: "+6588999011", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588000888", target: "+6588999012", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588000888", target: "+6588999013", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588666777", target: "+6588555666", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588555666", target: "+6588002112", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6581234567", target: "+6598765432", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6581234567", target: "+6591234567", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588000444", target: "+6588888999", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588000444", target: "+6588000111", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000333", target: "+6588555666", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000999", target: "+6588000111", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588001889", target: "+6588000111", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588001334", target: "+6588000111", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000111", target: "+6588000888", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000666", target: "+6588555666", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6588001223", target: "+6588555666", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6588000666", target: "+6588001445", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6588000111", target: "+6588001000", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000111", target: "+6588001112", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588001112", target: "+6512345677", duration: "95s", time: "2025-05-14 13:20", relationship: "Unknown" } },
+        { data: { source: "+6588001112", target: "+6512345679", duration: "95s", time: "2025-05-14 13:20", relationship: "Unknown" } },
+        { data: { source: "+6588001112", target: "+6512345697", duration: "95s", time: "2025-05-14 13:20", relationship: "Unknown" } },
+        { data: { source: "+6588000777", target: "+6588000555", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6593333333", target: "+6588000555", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588000777", target: "+6588000222", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588000777", target: "+6588002001", duration: "95s", time: "2025-05-14 13:20", relationship: "family" } },
+        { data: { source: "+6588000777", target: "+6599998888", duration: "95s", time: "2025-05-14 13:20", relationship: "unknown" } },
+        { data: { source: "+6588001990", target: "+6588000555", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588333444", target: "+6581234567", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588001556", target: "+6581234567", duration: "95s", time: "2025-05-14 13:20", relationship: "friend" } },
+        { data: { source: "+6588333444", target: "+6588001778", duration: "95s", time: "2025-05-14 13:20", relationship: "colleague" } },
+        { data: { source: "+6588001667", target: "+6588001778", duration: "95s", time: "2025-05-14 13:20", relationship: "colleague" } },
+      ]
+    };
+
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+
+            elements: data,
+
+            style: [
+            {
+                selector: 'node',
+                style: {
+                'label': 'data(id)',
+                'background-color': '#0074D9',
+                'text-valign': 'center',
+                'color': '#fff',
+                'text-outline-width': 2,
+                'text-outline-color': '#0074D9',
+                'font-size': 12,
+                'width': 40,
+                'height': 40
+                }
+            },
+            {
+                selector: 'node[id = "+6588000111"]',
+                style: {
+                'width': 60,
+                'height': 60,
+                'font-size': 18
+                }
+            },
+            {
+                selector: 'node[id = "+6512345697"], node[id = "+6512345679"], node[id = "+6512345677"], node[id = "+6588888999"], node[id = "+6588999011"], node[id = "+6588999012"], node[id = "+6588999013"]',
+                style: {
+                'width': 20,
+                'height': 20,
+                'font-size': 8
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                'width': 2,
+                'line-color': '#ccc',
+                'target-arrow-color': '#ccc',
+                'target-arrow-shape': 'triangle',
+                'curve-style': 'bezier'
+                }
+            }
+            ],
+
+            layout: {
+            name: 'cose',
+            animate: true
+            }
+        });
+</script>
+
+  </script>
+</body>
+</html>
