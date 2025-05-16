@@ -174,7 +174,16 @@
                 'line-color': '#ccc',
                 'target-arrow-color': '#ccc',
                 'target-arrow-shape': 'triangle',
-                'curve-style': 'bezier'
+                'curve-style': 'bezier',
+                'label': 'data(label)',
+                'font-size': '8px',
+                'color': '#333',
+                'text-background-color': '#fff',
+                'text-background-opacity': 1,
+                'text-background-shape': 'roundrectangle',
+                'text-border-color': '#ccc',
+                'text-border-width': 0.5,
+                'text-border-opacity': 1
                 }
             }
             ],
